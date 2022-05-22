@@ -1,4 +1,5 @@
 using System;
+using ProjectMayhemContentFramework;
 using ProjectMayhemContentFramework.Content;
 
 [Serializable]
@@ -31,5 +32,15 @@ public class TestGamemode : Gamemode
     public override void Init()
     {
         throw new System.NotImplementedException();
+    }
+
+    public override void OnPlayerJoin(Player player)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void OnPlayerLeave(Player player)
+    {
+        throw new NotImplementedException();
     }
 }

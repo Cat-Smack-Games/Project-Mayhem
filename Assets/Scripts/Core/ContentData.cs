@@ -20,7 +20,7 @@ namespace ProjectCoreFramework
             Data.gamemodes = new Dictionary<string, Gamemode>();
             Data.textures = new Dictionary<string, Texture>();
             Data.models = new Dictionary<string, Model>();
-            Data.gamemodes.Add(MockGamemode.Main().GamemodeInfo().gamemode_id, MockGamemode.Main());
+            //Data.gamemodes.Add(MockGamemode.Main().GamemodeInfo().gamemode_id, MockGamemode.Main());
 
 
         }

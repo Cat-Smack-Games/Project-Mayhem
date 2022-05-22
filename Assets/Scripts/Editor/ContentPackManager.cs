@@ -1,5 +1,6 @@
 using Microsoft.CSharp;
 using Newtonsoft.Json;
+using ObjParser;
 using ProjectMayhemContentFramework.Content;
 using System;
 using System.CodeDom.Compiler;
@@ -11,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using static ProjectMayhemContentFramework.Content.Model;
 using static ProjectMayhemContentFramework.Content.Texture;
 
 public class ContentPackManager : Editor
@@ -23,6 +25,7 @@ public class ContentPackManager : Editor
         string contentPath = Application.dataPath + "/Content/";
         var gamemodeDirs = Directory.GetDirectories(contentPath + "Gamemodes/");
         var textures = Directory.GetFiles(contentPath + "Textures/");
+        var models = Directory.GetFiles(contentPath + "Models/");
         ProjectCoreFramework.ContentData.Data = new ProjectCoreFramework.Content();
         ProjectCoreFramework.ContentData.Data.gamemodes = new Dictionary<string, Gamemode>();
         ProjectCoreFramework.ContentData.Data.textures = new Dictionary<string, ProjectMayhemContentFramework.Content.Texture>();
@@ -43,8 +46,42 @@ public class ContentPackManager : Editor
            
             
         }
+
+        foreach (var modelPath in models)
+        {
+            Debug.Log(modelPath);
+            if (modelPath.EndsWith(".obj") || modelPath.EndsWith(".fbx"))
+            {
+                LoadModels(modelPath);
+            }
+
+
+        }
         ProjectCoreFramework.ContentData.SaveContentData();
     }
+
+    private static void LoadModels(string modelPath)
+    {
+        string jsonPath = "";
+        if (modelPath.EndsWith(".obj"))
+        {
+            jsonPath = modelPath.Replace(".obj", ".json");
+        }
+        else if (modelPath.EndsWith(".fbx"))
+        {
+            jsonPath = modelPath.Replace(".fbx", ".json");
+        }
+
+        Model tempModel = new Model();
+        var obj = new Obj();
+        obj.LoadObj(modelPath);
+        tempModel.model = obj;
+        string json = File.ReadAllText(jsonPath);
+        ModelInfo info = JsonConvert.DeserializeObject<ModelInfo>(json);
+        tempModel.Info = info;
+        ProjectCoreFramework.ContentData.Data.models.Add(info.model_id, tempModel);
+    }
+
     public static void LoadTextures(string texturePath)
     {
         string jsonPath = "";

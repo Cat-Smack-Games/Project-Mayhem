@@ -1,6 +1,8 @@
 using ProjectMayhemContentFramework.Content;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using UnityEngine;
 
 public static class ContentManager
@@ -50,5 +52,17 @@ public static class ContentManager
     public static Dictionary<string, Model> GetModels()
     {
         return models;
+    }
+
+
+    public static Texture2D SystemImageToTexture2D(System.Drawing.Image image)
+    {
+        Bitmap bitmap = new Bitmap(image);
+        Texture2D convertedTx = new Texture2D(200, 200);
+
+        MemoryStream msFinger = new MemoryStream();
+        bitmap.Save(msFinger, bitmap.RawFormat);
+        convertedTx.LoadImage(msFinger.ToArray());
+        return convertedTx;
     }
 }
