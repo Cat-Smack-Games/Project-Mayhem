@@ -1,3 +1,4 @@
+using Dummiesman;
 using ProjectMayhemContentFramework.Content;
 using System.Collections;
 using System.Collections.Generic;
@@ -64,5 +65,15 @@ public static class ContentManager
         bitmap.Save(msFinger, bitmap.RawFormat);
         convertedTx.LoadImage(msFinger.ToArray());
         return convertedTx;
+    }
+    public static GameObject ModelToGameObject(Model model)
+    {
+
+
+        model.model.WriteObjFile(model.Info.model_id + ".obj", null);
+        GameObject obj = new OBJLoader().Load(model.Info.model_id + ".obj");
+        File.Delete(model.Info.model_id + ".obj");
+
+        return obj;
     }
 }

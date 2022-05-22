@@ -54,10 +54,9 @@ public class LevelEditor : MonoBehaviour
             {
                 GameObject model = Instantiate(Resources.Load("ModelRenderer") as GameObject);
                 model.name = pair.Key;
-                var obj = new Obj();
-                pair.Value.model.WriteObjFile(pair.Key + ".obj", null);
-                GameObject loadedObject;
-                loadedObject = new OBJLoader().Load(pair.Key + ".obj");
+                
+                GameObject gameobj = ContentManager.ModelToGameObject(pair.Value);
+               
                 model.transform.SetParent(modelContent.transform, false);
                 modelsRendered.Add(model);
 
