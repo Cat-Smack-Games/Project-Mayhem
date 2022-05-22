@@ -35,6 +35,31 @@ public static class Console
         {
             Game.LeaveGame();
         }
+        else if (args[0].Equals("leveleditor") || args[0].Equals("editor"))
+        {
+            Game.OpenLevelEditor();
+        }
+        else if (args[0].Equals("debug_registry"))
+        {
+            Console.LogMessage("Gamemodes Registered: " + ContentManager.GetGamemodes().Count, Color.grey);
+            Console.LogMessage("Textures Registered: " + ContentManager.GetTextures().Count, Color.grey);
+            Console.LogMessage("Models Registered: " + ContentManager.GetModels().Count, Color.grey);
+
+        }
+        else if (args[0].Equals("debug_player"))
+        {
+            if(Game.LocalPlayer() != null)
+            {
+                Console.LogMessage("Player ID: " + Game.LocalPlayer().ID, Color.grey);
+                Console.LogMessage("Player Username: " + Game.LocalPlayer().Username, Color.grey);
+                Console.LogMessage("Player Session Ticket: " + Game.LocalPlayer().SessionTicket, Color.grey);
+            }
+            else
+            {
+                Console.LogMessage("No Local Player Found!" + Game.LocalPlayer().ID, Color.red);
+            }
+
+        }
         else
         {
             Console.LogMessage("Unknown Command", Color.red);

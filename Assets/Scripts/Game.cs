@@ -1,5 +1,5 @@
-using ProjectFramework;
-using ProjectFramework.Content;
+using ProjectMayhemContentFramework;
+using ProjectMayhemContentFramework.Content;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -44,6 +44,15 @@ public static class Game
             return;
         }
     }
+    public static void Auth()
+    {
+        SceneManager.LoadScene("auth");
+    }
+    public static void OpenLevelEditor()
+    {
+        SceneManager.LoadScene("leveleditor");
+    }
+
     public static Gamemode LoadGameMode()
     {
         if(gamemode == null)
@@ -67,12 +76,5 @@ public static class Game
         SceneManager.LoadScene("mainmenu");
     }
 
-    public class CoreContent
-    {
-        public static Gamemode[] Gamemodes = new Gamemode[] { new TestGamemode(), new GamemodeTest()};
-        public static Map[] Maps = new Map[] {  };
-        public static Model[] Models = new Model[] {};
-        public static ProjectFramework.Content.Texture[] Textures = new ProjectFramework.Content.Texture[] { };
-
-    }
+   
 }
