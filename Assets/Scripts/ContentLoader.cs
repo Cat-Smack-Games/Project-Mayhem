@@ -4,7 +4,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using PlayFab.SharedModels;
 using ProjectCoreFramework;
-using ProjectFramework.Content;
+using ProjectMayhemContentFramework.Content;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
@@ -31,15 +31,30 @@ public class ContentLoader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       
+        Console.LogMessage("Game Started", Color.yellow);
         // If you want a synchronous result, you can call loginTask.Wait() - Note, this will halt the program until the function returns
-        if(Game.LocalPlayer().SessionTicket == null)
+        if (Game.LocalPlayer().SessionTicket == null)
         {
             SceneManager.LoadScene("auth");
         }
         actions.Add(LoadCoreContent);
         actions.Add(LoadCommunityContent);
         loadInfo = GameObject.FindWithTag("LoadingInfo");
+        Content content = ProjectCoreFramework.ContentData.LoadContentData();
+        foreach (KeyValuePair<string, Gamemode> pair in content.gamemodes)
+        {
+            ContentManager.AddGamemode(pair.Key, pair.Value);
+        }
+        foreach (KeyValuePair<string, ProjectMayhemContentFramework.Content.Texture> pair in content.textures)
+        {
+            ContentManager.AddTexture(pair.Key, pair.Value);
+        }
+        foreach (KeyValuePair<string, Model> pair in content.models)
+        {
+            ContentManager.AddModel(pair.Key, pair.Value);
+        }
+
+        Console.LogMessage("CCC : " + ContentManager.GetTextures().Count.ToString(), Color.yellow);
         Load();
         
     }
@@ -55,7 +70,7 @@ public class ContentLoader : MonoBehaviour
         {
 
             GameObject.FindGameObjectWithTag("MainMenu").transform.GetChild(0).gameObject.SetActive(true);   
-            GameObject.FindGameObjectWithTag("LoadingScreen").SetActive(false);
+           // GameObject.FindGameObjectWithTag("LoadingScreen").SetActive(false);
         }
     }
   
@@ -64,37 +79,11 @@ public class ContentLoader : MonoBehaviour
     {
         await Task.Run(() =>
         {
-            
-            Gamemode[] gms = Game.CoreContent.Gamemodes;
-            Map[] maps = Game.CoreContent.Maps;
-            Model[] models = Game.CoreContent.Models;
-            ProjectFramework.Content.Texture[] textures = Game.CoreContent.Textures;
-            taskCount = gms.Length + maps.Length + models.Length + textures.Length;
-            Console.LogMessage("Task Count :" + taskCount, Color.white);
-            Console.LogMessage("Loading Core Content", Color.yellow);
-            for(int i = 0; i < gms.Length; i++)
-            {
-                ContentManager.AddGamemode(gms[i].GamemodeInfo().gamemode_name, gms[i]);
-                taskComplete++;
-            }
-            for (int i = 0; i < maps.Length; i++)
-            {
-                ContentManager.AddMap(maps[i].id, maps[i]);
-                taskComplete++;
-            }
-            for (int i = 0; i < models.Length; i++)
-            {
-                ContentManager.AddModel(models[i].id, models[i]);
-                taskComplete++;
-            }
-            for (int i = 0; i < textures.Length; i++)
-            {
-                ContentManager.AddTexture(textures[i].id, textures[i]);
-                taskComplete++;
-            }
+           
 
         });
         isLoading = false;
+        
     }
 
     private float CurrentPercent()
@@ -103,7 +92,7 @@ public class ContentLoader : MonoBehaviour
     }
     public void UpdatePercent()
     {
-        loadInfo.GetComponent<LoadingBar>().percent = CurrentPercent();
+       // loadInfo.GetComponent<LoadingBar>().percent = CurrentPercent();
     }
     public static void LoadText(string s)
     {

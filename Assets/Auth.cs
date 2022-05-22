@@ -40,7 +40,7 @@ public class Auth : MonoBehaviour
     }
     public void GetInfo(GetAccountInfoResult result)
     {
-        Game.SetLocalPlayer(new ProjectFramework.Player()
+        Game.SetLocalPlayer(new ProjectMayhemContentFramework.Player()
         {
             ID = result.AccountInfo.PlayFabId,
             Username = result.AccountInfo.Username,
