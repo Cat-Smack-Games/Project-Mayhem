@@ -36,12 +36,21 @@ public class LevelEditor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        UI.Popup.Create("Dev", "In early development", true , Test1);
         if (Game.LocalPlayer().SessionTicket == null)
         {
             Game.Auth(); 
         }
         pointer = (GameObject) Instantiate(Resources.Load("Pointer"), Vector3.zero, Quaternion.identity);
         pointerRendered = true;
+    }
+    public void Test1()
+    {
+        Debug.Log("Yes!");
+    }
+    public void Test2()
+    {
+        Debug.Log("No!");
     }
 
     // Update is called once per frame

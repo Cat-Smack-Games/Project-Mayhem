@@ -5,20 +5,16 @@ using UnityEngine.UI;
 
 public class PopupPromptUI : MonoBehaviour
 {
-    private GameObject acceptButton;
-    private GameObject affirmButton;
-    private GameObject cancelButton;
+    public GameObject acceptButton;
+    public GameObject affirmButton;
+    public GameObject cancelButton;
 
-    private TMPro.TMP_Text title;
-    private TMPro.TMP_Text description;
+    public TMPro.TMP_Text title;
+    public TMPro.TMP_Text description;
     // Start is called before the first frame update
     void Start()
     {
-        acceptButton = this.gameObject.transform.GetChild(0).Find("Confirm").gameObject;
-        affirmButton = this.gameObject.transform.GetChild(0).Find("Okay").gameObject;
-        cancelButton = this.gameObject.transform.GetChild(0).Find("Deny").gameObject;
-        title = this.gameObject.transform.GetChild(0).Find("Title").gameObject.GetComponent<TMPro.TMP_Text>();
-        description = this.gameObject.transform.GetChild(0).Find("Desc").gameObject.GetComponent<TMPro.TMP_Text>();
+       
     }
     public void LoadInfo(string title, string message, bool yesNo, System.Action yesAction, System.Action noAction)
     {
@@ -29,8 +25,18 @@ public class PopupPromptUI : MonoBehaviour
             acceptButton.SetActive(true);
             affirmButton.SetActive(false);
             cancelButton.SetActive(true);
-            affirmButton.GetComponent<Button>().onClick.AddListener(delegate { yesAction(); });
-            cancelButton.GetComponent<Button>().onClick.AddListener(delegate { noAction(); });
+            acceptButton.GetComponent<Button>().onClick.AddListener(delegate { yesAction(); });
+            acceptButton.GetComponent<Button>().onClick.AddListener(delegate { Close(); });
+
+            if (noAction == null)
+            {
+                cancelButton.GetComponent<Button>().onClick.AddListener(delegate { Close(); });
+        
+            }
+            else
+            {
+                cancelButton.GetComponent<Button>().onClick.AddListener(delegate { noAction(); });
+            }
         }
         else
         {
@@ -39,7 +45,10 @@ public class PopupPromptUI : MonoBehaviour
             cancelButton.SetActive(false);
         }
     }
-   
+    public void Close()
+    {
+        GameObject.Destroy(this.gameObject);
+    }
     // Update is called once per frame
     void Update()
     {
