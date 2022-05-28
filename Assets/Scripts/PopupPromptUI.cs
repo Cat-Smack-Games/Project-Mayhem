@@ -28,15 +28,11 @@ public class PopupPromptUI : MonoBehaviour
             acceptButton.GetComponent<Button>().onClick.AddListener(delegate { yesAction(); });
             acceptButton.GetComponent<Button>().onClick.AddListener(delegate { Close(); });
 
-            if (noAction == null)
+            if (noAction != null)
             {
-                cancelButton.GetComponent<Button>().onClick.AddListener(delegate { Close(); });
-        
+               cancelButton.GetComponent<Button>().onClick.AddListener(delegate { noAction(); });
             }
-            else
-            {
-                cancelButton.GetComponent<Button>().onClick.AddListener(delegate { noAction(); });
-            }
+               cancelButton.GetComponent<Button>().onClick.AddListener(delegate { Close(); });
         }
         else
         {

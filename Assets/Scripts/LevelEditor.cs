@@ -33,6 +33,9 @@ public class LevelEditor : MonoBehaviour
     private float cameraPitch = 0f;
     private float rotSpeed = 2f;
     private float moveSpeed = 2f;
+    //
+
+    public List<GameObject> mapObjects = new List<GameObject>();
     // Start is called before the first frame update
     void Start()
     {
@@ -67,6 +70,7 @@ public class LevelEditor : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.Mouse1))
         {
+            pointerRendered = false;
             Cursor.lockState = CursorLockMode.Locked;
             cameraYaw += rotSpeed * Input.GetAxis("Mouse X");
             cameraPitch += rotSpeed * Input.GetAxis("Mouse Y");
@@ -74,6 +78,7 @@ public class LevelEditor : MonoBehaviour
         }
         else
         {
+            pointerRendered = true;
             Cursor.lockState = CursorLockMode.None;
         }
         if (Input.GetKey(KeyCode.W))
@@ -177,12 +182,16 @@ public class LevelEditor : MonoBehaviour
         Plane plane = new Plane(Vector3.up, 0);
         float distance;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (plane.Raycast(ray, out distance))
+        if(pointerRendered)
         {
-            pointer.SetActive(true);
-            pointer.transform.position = ray.GetPoint(distance);
+            if (plane.Raycast(ray, out distance))
+            {
+                pointer.SetActive(true);
+                pointer.transform.position = ray.GetPoint(distance);
+            }
+            else pointer.SetActive(false);
         }
-        else pointer.SetActive(false); 
+        
 
     }
 }
