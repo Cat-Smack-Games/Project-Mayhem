@@ -1,6 +1,7 @@
 using Dummiesman;
 using ObjParser;
 using ProjectMayhemContentFramework.Content;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,6 +19,20 @@ public class LevelEditor : MonoBehaviour
     private bool modelContentRendered;
     private List<GameObject> texturesRendered = new List<GameObject>();
     private List<GameObject> modelsRendered = new List<GameObject>();
+    private Vector3 lastMousePos = Vector3.zero;
+
+    //
+    public GameObject currentModel;
+    private GameObject pointer;
+    private bool pointerRendered = false;
+    
+    //
+    private Vector3 cameraPos = Vector3.zero;
+    private Vector3 camRot = Vector3.zero;
+    private float cameraYaw = 0f;
+    private float cameraPitch = 0f;
+    private float rotSpeed = 2f;
+    private float moveSpeed = 2f;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,45 +40,59 @@ public class LevelEditor : MonoBehaviour
         {
             Game.Auth(); 
         }
-
+        pointer = (GameObject) Instantiate(Resources.Load("Pointer"), Vector3.zero, Quaternion.identity);
+        pointerRendered = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(contentSelection.value == 0 && !textureContentRendered) // Textures
+        RenderPointer();
+        RenderContent();
+        CameraMovement();
+
+
+    }
+
+    private void CameraMovement()
+    {
+        if(Input.GetKey(KeyCode.Mouse1))
         {
-            ResetContent();
-            foreach (KeyValuePair<string, ProjectMayhemContentFramework.Content.Texture> pair in ContentManager.GetTextures())
-            {
-                GameObject texture = Instantiate(Resources.Load("TextureRenderer") as GameObject);
-                texture.name = pair.Key;
-
-                Texture2D convertedTx = ContentManager.SystemImageToTexture2D(pair.Value.texture);
-                texture.GetComponent<Image>().sprite = Sprite.Create(convertedTx, new Rect(0.0f, 0.0f, 100, 100), new Vector2(0.5f, 0.5f), 100.0f); 
-                texture.transform.SetParent(textureContent.transform, false);
-                texturesRendered.Add(texture);
-
-            }
-            textureContentRendered = true;
+            Cursor.lockState = CursorLockMode.Locked;
+            cameraYaw += rotSpeed * Input.GetAxis("Mouse X");
+            cameraPitch += rotSpeed * Input.GetAxis("Mouse Y");
+            Camera.main.transform.eulerAngles = new Vector3(cameraPitch, cameraYaw, 0f);
         }
-        else if (contentSelection.value == 1 && !modelContentRendered) // Textures
+        else
         {
-            ResetContent();
-            foreach (KeyValuePair<string, Model> pair in ContentManager.GetModels())
-            {
-                GameObject model = Instantiate(Resources.Load("ModelRenderer") as GameObject);
-                model.name = pair.Key;
-                
-                GameObject gameobj = ContentManager.ModelToGameObject(pair.Value);
-               
-                model.transform.SetParent(modelContent.transform, false);
-                modelsRendered.Add(model);
-
-            }
-            modelContentRendered = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            Camera.main.transform.position += Camera.main.transform.forward * Time.deltaTime * moveSpeed;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            Camera.main.transform.position -= Camera.main.transform.forward * Time.deltaTime * moveSpeed;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            Camera.main.transform.position -= Camera.main.transform.right * Time.deltaTime * moveSpeed;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            Camera.main.transform.position += Camera.main.transform.right * Time.deltaTime * moveSpeed;
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            Camera.main.transform.position += Vector3.up * Time.deltaTime * moveSpeed;
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            Camera.main.transform.position += Vector3.down * Time.deltaTime * moveSpeed;
         }
     }
+
     private void ResetContent()
     {
         ResetTextureContent();
@@ -88,5 +117,63 @@ public class LevelEditor : MonoBehaviour
         }
         modelsRendered.Clear();
         modelContentRendered = false;
+    }
+
+    public void SetSelectedModel(GameObject obj)
+    {
+        currentModel = obj;
+    }
+    public GameObject GetSelectedModel()
+    {
+        return currentModel;
+    }
+
+    public void RenderContent()
+    {
+        if (contentSelection.value == 0 && !textureContentRendered) // Textures
+        {
+            ResetContent();
+            foreach (KeyValuePair<string, ProjectMayhemContentFramework.Content.Texture> pair in ContentManager.GetTextures())
+            {
+                GameObject texture = Instantiate(Resources.Load("TextureRenderer") as GameObject);
+                texture.name = pair.Key;
+                Texture2D convertedTx = ContentManager.SystemImageToTexture2D(pair.Value.texture);
+                texture.GetComponent<Image>().sprite = Sprite.Create(convertedTx, new Rect(0.0f, 0.0f, 100, 100), new Vector2(0.5f, 0.5f), 100.0f);
+                texture.transform.SetParent(textureContent.transform, false);
+                texturesRendered.Add(texture);
+
+            }
+            textureContentRendered = true;
+        }
+        else if (contentSelection.value == 1 && !modelContentRendered) // Models
+        {
+            ResetContent();
+            foreach (KeyValuePair<string, Model> pair in ContentManager.GetModels())
+            {
+                GameObject model = Instantiate(Resources.Load("ModelRenderer") as GameObject);
+                model.name = pair.Key;
+
+                GameObject gameobj = ContentManager.ModelToGameObject(pair.Value);
+
+                model.transform.SetParent(modelContent.transform, false);
+                modelsRendered.Add(model);
+
+            }
+            modelContentRendered = true;
+
+        }
+    }
+    public void RenderPointer()
+    {
+        Plane plane = new Plane(Vector3.up, 0);
+        float distance;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (plane.Raycast(ray, out distance))
+        {
+            pointer.SetActive(true);
+            pointer.transform.position = ray.GetPoint(distance);
+        }
+        else pointer.SetActive(false); 
+
     }
 }
